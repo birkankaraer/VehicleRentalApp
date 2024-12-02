@@ -1,0 +1,43 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Araç Çalışma Grafikleri";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<canvas id="vehicleChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('vehicleChart').getContext('2d');
+    var vehicleChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.Select(x => x.Name))),
+            datasets: [
+                {
+                    label: 'Aktif Çalışma Süresi (Saat)',
+                    data: @Html.Raw(Json.Serialize(Model.Select(x => x.ActiveWorkingHours))),
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Boşta Bekleme Süresi (Saat)',
+                    data: @Html.Raw(Json.Serialize(Model.Select(x => x.IdleHours))),
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Vehicle>
+
+@{
+    ViewData["Title"] = "Araç Listesi";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Araç Adı</th>
+            <th>Plaka Numarası</th>
+            <th>Aktif Çalışma Süresi (Saat)</th>
+            <th>Bakım Süresi (Saat)</th>
+            <th>Boşta Bekleme Süresi (Saat)</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vehicle in Model)
+        {
+            <tr>
+                <td>@vehicle.VehicleName</td>
+                <td>@vehicle.PlateNumber</td>
+                <td>@vehicle.ActiveWorkingHours</td>
+                <td>@vehicle.MaintenanceHours</td>
+                <td>@vehicle.IdleHours</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Vehicle", new { id = vehicle.Id })" class="btn btn-warning">Düzenle</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

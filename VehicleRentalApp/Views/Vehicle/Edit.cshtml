@@ -1,0 +1,19 @@
+﻿@model Vehicle
+
+@{
+    ViewData["Title"] = "Çalışma ve Bakım Süresi Güncelle";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="ActiveWorkingHours">Aktif Çalışma Süresi (Saat)</label>
+        <input type="number" class="form-control" id="ActiveWorkingHours" name="ActiveWorkingHours" value="@Model.ActiveWorkingHours" required />
+    </div>
+    <div class="form-group">
+        <label for="MaintenanceHours">Bakım Süresi (Saat)</label>
+        <input type="number" class="form-control" id="MaintenanceHours" name="MaintenanceHours" value="@Model.MaintenanceHours" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+</form>
