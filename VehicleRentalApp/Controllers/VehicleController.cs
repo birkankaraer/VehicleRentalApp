@@ -16,6 +16,7 @@ namespace VehicleRentalApp.Controllers
         }
 
         // GET: Vehicle/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -84,8 +85,19 @@ namespace VehicleRentalApp.Controllers
             {
                 try
                 {
-                    // Güncelleme işlemi
-                    _context.Update(vehicle);
+                    var existingVehicle = await _context.Vehicles.FindAsync(id);
+
+                    if (existingVehicle == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Sadece Aktif Çalışma ve Bakım Süresi güncelleniyor
+                    existingVehicle.ActiveWorkingHours = vehicle.ActiveWorkingHours;
+                    existingVehicle.MaintenanceHours = vehicle.MaintenanceHours;
+
+                    // Değişiklikleri kaydet
+                    _context.Update(existingVehicle);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -103,6 +115,7 @@ namespace VehicleRentalApp.Controllers
             }
             return View(vehicle);
         }
+
 
         private bool VehicleExists(int id)
         {

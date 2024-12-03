@@ -8,6 +8,14 @@
 
 <form method="post">
     <div class="form-group">
+        <label for="VehicleName">Araç Adı</label>
+        <input type="text" class="form-control" id="VehicleName" name="VehicleName" value="@Model.VehicleName" disabled />
+    </div>
+    <div class="form-group">
+        <label for="PlateNumber">Plaka Numarası</label>
+        <input type="text" class="form-control" id="PlateNumber" name="PlateNumber" value="@Model.PlateNumber" disabled />
+    </div>
+    <div class="form-group">
         <label for="ActiveWorkingHours">Aktif Çalışma Süresi (Saat)</label>
         <input type="number" class="form-control" id="ActiveWorkingHours" name="ActiveWorkingHours" value="@Model.ActiveWorkingHours" required />
     </div>

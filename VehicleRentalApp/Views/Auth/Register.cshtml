@@ -2,39 +2,25 @@
 
 <h2>Kayıt Ol</h2>
 
-<form method="post">
-    <div class="form-group">
-        <label for="Username">Kullanıcı Adı</label>
-        <input type="text" class="form-control" id="Username" name="Username" value="@Model.Username" />
-        @if (ViewData.ModelState["Username"] != null)
-        {
-            <div class="text-danger">
-                @ViewData.ModelState["Username"].Errors.FirstOrDefault()?.ErrorMessage
-            </div>
-        }
-    </div>
-
-    <div class="form-group">
-        <label for="Password">Şifre</label>
-        <input type="password" class="form-control" id="Password" name="Password" value="@Model.Password" />
-        @if (ViewData.ModelState["Password"] != null)
-        {
-            <div class="text-danger">
-                @ViewData.ModelState["Password"].Errors.FirstOrDefault()?.ErrorMessage
-            </div>
-        }
-    </div>
-
-    <div class="form-group">
-        <label for="ConfirmPassword">Şifre Onayı</label>
-        <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" value="@Model.ConfirmPassword" />
-        @if (ViewData.ModelState["ConfirmPassword"] != null)
-        {
-            <div class="text-danger">
-                @ViewData.ModelState["ConfirmPassword"].Errors.FirstOrDefault()?.ErrorMessage
-            </div>
-        }
-    </div>
-
-    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
-</form>
+@if (Model != null)
+{
+    <form method="post">
+        <div class="form-group">
+            <label for="Username">Kullanıcı Adı</label>
+            <input type="text" class="form-control" id="Username" name="Username" value="@Model.Username" required />
+        </div>
+        <div class="form-group">
+            <label for="Password">Şifre</label>
+            <input type="password" class="form-control" id="Password" name="Password" value="@Model.Password" required />
+        </div>
+        <div class="form-group">
+            <label for="ConfirmPassword">Şifre Onayı</label>
+            <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" value="@Model.ConfirmPassword" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+    </form>
+}
+else
+{
+    <p>Model verisi bulunamadı. Lütfen tekrar deneyin.</p>
+}

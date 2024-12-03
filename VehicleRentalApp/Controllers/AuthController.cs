@@ -40,48 +40,57 @@ namespace VehicleRentalApp.Controllers
 
             // Token oluşturuluyor
             var token = _tokenService.GenerateToken(user);
-            return Json(new { token });
+
+            // Token'ı Cookie veya Header'da saklayabilirsiniz, örneğin:
+            Response.Cookies.Append("auth_token", token, new CookieOptions { HttpOnly = true });
+
+            // Kullanıcıyı home sayfasına yönlendiriyoruz
+            return RedirectToAction("Index", "Home");
         }
+
 
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            // Modeli null olarak değil, boş bir nesne ile başlatıyoruz
+            var model = new RegisterViewModel();
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            // Kullanıcı var mı kontrol et
-            var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == model.Username);
-
-            if (existingUser != null)
+            if (ModelState.IsValid)
             {
-                return BadRequest("Kullanıcı zaten var.");
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("ConfirmPassword", "Şifreler eşleşmiyor.");
+                    return View(model);
+                }
+
+                var user = new User
+                {
+                    Username = model.Username,
+                    Password = _passwordHasher.HashPassword(null, model.Password), // Şifreyi hashle
+                    Role = "User" // Varsayılan rol "User"
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Login");
             }
 
-            if (model.Password != model.ConfirmPassword)
-            {
-                ModelState.AddModelError("ConfirmPassword", "Şifreler eşleşmiyor.");
-                return View(model);
-            }
-
-            // Yeni kullanıcı oluştur
-            var user = new User
-            {
-                Username = model.Username,
-                // Şifreyi hashle
-                Password = _passwordHasher.HashPassword(null, model.Password),
-                Role = "User" // Varsayılan rol
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Token oluşturuluyor
-            var token = _tokenService.GenerateToken(user);
-            return Json(new { token });
+            // Eğer model geçersizse, formu tekrar göster
+            return View(model);
         }
+
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("auth_token"); // Auth token'ı sil
+            return RedirectToAction("Index", "Home"); // Home sayfasına yönlendir
+        }
+
+
     }
 }

@@ -17,15 +17,15 @@
             labels: @Html.Raw(Json.Serialize(Model.Select(x => x.Name))),
             datasets: [
                 {
-                    label: 'Aktif Çalışma Süresi (Saat)',
-                    data: @Html.Raw(Json.Serialize(Model.Select(x => x.ActiveWorkingHours))),
+                    label: 'Aktif Çalışma Süresi (%)',
+                    data: @Html.Raw(Json.Serialize(Model.Select(x => (x.ActiveWorkingHours / (7 * 24)) * 100))),
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
                 },
                 {
-                    label: 'Boşta Bekleme Süresi (Saat)',
-                    data: @Html.Raw(Json.Serialize(Model.Select(x => x.IdleHours))),
+                    label: 'Boşta Bekleme Süresi (%)',
+                    data: @Html.Raw(Json.Serialize(Model.Select(x => ((7 * 24 - (x.ActiveWorkingHours + x.MaintenanceHours)) / (7 * 24)) * 100))),
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
@@ -35,7 +35,12 @@
         options: {
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
                 }
             }
         }

@@ -5,11 +5,14 @@
 <form method="post">
     <div class="form-group">
         <label for="Username">Kullanıcı Adı</label>
-        <input type="text" class="form-control" id="Username" name="Username" />
+        <input type="text" class="form-control" id="Username" name="Username" required />
     </div>
     <div class="form-group">
         <label for="Password">Şifre</label>
-        <input type="password" class="form-control" id="Password" name="Password" />
+        <input type="password" class="form-control" id="Password" name="Password" required />
     </div>
     <button type="submit" class="btn btn-primary">Giriş Yap</button>
+    <div>
+        <p>hesabınız yoksa buraya: <a class="link-info" asp-area="" asp-controller="Auth" asp-action="Register">tıklayın</a></p>
+    </div>
 </form>
