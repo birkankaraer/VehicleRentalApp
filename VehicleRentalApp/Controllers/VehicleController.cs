@@ -29,6 +29,25 @@ namespace VehicleRentalApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingvehicle = await _context.Vehicles
+                    .FirstOrDefaultAsync(v => v.VehicleName == vehicle.VehicleName);
+
+                var existingplatenumber = await _context.Vehicles
+                    .FirstOrDefaultAsync(pn => pn.PlateNumber == vehicle.PlateNumber);
+
+                if (existingvehicle != null)
+                {
+                    ModelState.AddModelError("VehicleName", "Bu araç zaten mevcut");
+                    return View(vehicle);
+                }
+
+                if (existingplatenumber != null)
+                {
+                    ModelState.AddModelError("VehicleName", "Bu plaka zaten mevcut");
+                    return View(vehicle);
+                }
+
+
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -37,19 +56,21 @@ namespace VehicleRentalApp.Controllers
         }
 
         // GET: Vehicle/Index
-        // Hem Admin hem User rolü erişebilir
         public async Task<IActionResult> Index()
         {
-            // Tüm araçları getir
             var vehicles = await _context.Vehicles.ToListAsync();
-
-            // Her araç için boşta bekleme süresini hesapla
             foreach (var vehicle in vehicles)
             {
                 vehicle.IdleHours = (7 * 24) - (vehicle.ActiveWorkingHours + vehicle.MaintenanceHours);
             }
+            return View(vehicles);
+        }
 
-            return View(vehicles); // View'e gönder
+        [HttpGet]
+        public async Task<IActionResult> GetVehicles()
+        {
+            var vehicles = await _context.Vehicles.ToListAsync();
+            return Json(vehicles);
         }
 
 
@@ -92,11 +113,9 @@ namespace VehicleRentalApp.Controllers
                         return NotFound();
                     }
 
-                    // Sadece Aktif Çalışma ve Bakım Süresi güncelleniyor
                     existingVehicle.ActiveWorkingHours = vehicle.ActiveWorkingHours;
                     existingVehicle.MaintenanceHours = vehicle.MaintenanceHours;
 
-                    // Değişiklikleri kaydet
                     _context.Update(existingVehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -111,11 +130,10 @@ namespace VehicleRentalApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index)); // Listeye yönlendirme
+                return RedirectToAction(nameof(Index));
             }
             return View(vehicle);
         }
-
 
         private bool VehicleExists(int id)
         {
@@ -131,11 +149,10 @@ namespace VehicleRentalApp.Controllers
             {
                 Name = v.VehicleName,
                 ActiveWorkingHours = v.ActiveWorkingHours,
-                IdleHours = (7 * 24) - (v.ActiveWorkingHours + v.MaintenanceHours)
+                MaintenanceHours = v.MaintenanceHours
             }).ToList();
 
-            return View(data); // Veriyi View'e gönder
+            return View(data);
         }
-
     }
 }

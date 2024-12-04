@@ -6,12 +6,17 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<canvas id="vehicleChart" width="400" height="200"></canvas>
+<!-- İlk Grafik: Aktif Çalışma Süresi (%) -->
+<canvas id="activeWorkingHoursChart" width="400" height="200"></canvas>
+
+<!-- İkinci Grafik: Boşta Bekleme Süresi (%) -->
+<canvas id="idleHoursChart" width="400" height="200"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('vehicleChart').getContext('2d');
-    var vehicleChart = new Chart(ctx, {
+    // Aktif Çalışma Süresi Grafiği
+    var ctx1 = document.getElementById('activeWorkingHoursChart').getContext('2d');
+    var activeWorkingHoursChart = new Chart(ctx1, {
         type: 'bar',
         data: {
             labels: @Html.Raw(Json.Serialize(Model.Select(x => x.Name))),
@@ -22,7 +27,30 @@
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
-                },
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Boşta Bekleme Süresi Grafiği
+    var ctx2 = document.getElementById('idleHoursChart').getContext('2d');
+    var idleHoursChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.Select(x => x.Name))),
+            datasets: [
                 {
                     label: 'Boşta Bekleme Süresi (%)',
                     data: @Html.Raw(Json.Serialize(Model.Select(x => ((7 * 24 - (x.ActiveWorkingHours + x.MaintenanceHours)) / (7 * 24)) * 100))),

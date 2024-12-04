@@ -6,30 +6,73 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Araç Adı</th>
-            <th>Plaka Numarası</th>
-            <th>Aktif Çalışma Süresi (Saat)</th>
-            <th>Bakım Süresi (Saat)</th>
-            <th>Boşta Bekleme Süresi (Saat)</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var vehicle in Model)
-        {
+@if (User.Identity.Name == "admin")
+{
+    <p><a class="btn btn-primary" asp-area="" asp-controller="Vehicle" asp-action="Create">Araç Ekle</a></p>
+}
+
+<!-- Tabloyu responsive yapmak için div kullanıyoruz -->
+<div class="table-responsive">
+    <table class="table table-bordered" id="vehicleTable">
+        <thead>
             <tr>
-                <td>@vehicle.VehicleName</td>
-                <td>@vehicle.PlateNumber</td>
-                <td>@vehicle.ActiveWorkingHours</td>
-                <td>@vehicle.MaintenanceHours</td>
-                <td>@vehicle.IdleHours</td>
-                <td>
-                    <a href="@Url.Action("Edit", "Vehicle", new { id = vehicle.Id })" class="btn btn-warning">Düzenle</a>
-                </td>
+                <th>Araç Adı</th>
+                <th>Plaka Numarası</th>
+                <th>Aktif Çalışma Süresi (Saat)</th>
+                <th>Bakım Süresi (Saat)</th>
+                <th>Boşta Bekleme Süresi (Saat)</th>
+                <th>İşlemler</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody id="vehicleTableBody">
+            <!-- Tablo içeriği Ajax ile doldurulacak -->
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <!-- JQuery kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- DataTables CSS ve JS (Opsiyonel) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Tablodaki verileri doldurmak için Ajax çağrısı
+            $.ajax({
+                url: '/Vehicle/GetVehicles', // Controller'daki API endpoint
+                method: 'GET',
+                success: function (data) {
+                    var tableBody = $("#vehicleTableBody");
+                    tableBody.empty(); // Tabloyu temizle
+
+                    // Gelen her araç için tablo satırı oluştur
+                    data.forEach(function (vehicle) {
+                        tableBody.append(`
+                            <tr>
+                                <td>${vehicle.vehicleName}</td>
+                                <td>${vehicle.plateNumber}</td>
+                                <td>${vehicle.activeWorkingHours}</td>
+                                <td>${vehicle.maintenanceHours}</td>
+                                <td>${vehicle.idleHours}</td>
+                                <td>
+                                @if(User.Identity.Name == "user"){
+                                <a href="/Vehicle/Edit/${vehicle.id}" class="btn btn-warning">Düzenle</a>
+                                }
+                                </td>
+                            </tr>
+                        `);
+                    });
+
+                    // Tabloya DataTables özelliğini uygula (Opsiyonel)
+                    $("#vehicleTable").DataTable();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Veriler yüklenirken hata oluştu:", error);
+                }
+            });
+        });
+    </script>
+}

@@ -62,12 +62,24 @@ namespace VehicleRentalApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Kullanıcı adı kontrolü
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == model.Username);
+
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Username", "Bu kullanıcı adı zaten alınmış.");
+                    return View(model);
+                }
+
+                //şifre eşleşmesi kontrolü
                 if (model.Password != model.ConfirmPassword)
                 {
                     ModelState.AddModelError("ConfirmPassword", "Şifreler eşleşmiyor.");
                     return View(model);
                 }
 
+                //kullanıcı oluşturma
                 var user = new User
                 {
                     Username = model.Username,
